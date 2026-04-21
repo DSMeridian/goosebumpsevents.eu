@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://www.goosebumpsevents.eu/</loc>
+    <lastmod>2026-04-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.goosebumpsevents.eu/"/>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.goosebumpsevents.eu/?lang=fr"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://www.goosebumpsevents.eu/?lang=nl"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://www.goosebumpsevents.eu/"/>
+  </url>
+</urlset>
