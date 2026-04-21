@@ -890,13 +890,16 @@ footer{background:var(--dark);border-top:1px solid rgba(85,69,165,.14);padding:5
       </div>
       <div class="sa from-right">
         <form class="cf" onsubmit="doSub(event)">
+          <input type="hidden" name="_subject" value="New Event Enquiry — Goosebumps">
+          <input type="hidden" name="_template" value="table">
+          <input type="hidden" name="_captcha" value="false">
           <div class="fr2">
-            <div class="fg"><label data-i18n="f.fn">First Name</label><input type="text" required></div>
-            <div class="fg"><label data-i18n="f.ln">Last Name</label><input type="text" required></div>
+            <div class="fg"><label data-i18n="f.fn">First Name</label><input type="text" name="First Name" autocomplete="given-name" required></div>
+            <div class="fg"><label data-i18n="f.ln">Last Name</label><input type="text" name="Last Name" autocomplete="family-name" required></div>
           </div>
-          <div class="fg"><label data-i18n="f.em">Email</label><input type="email" required></div>
-          <div class="fg"><label data-i18n="f.ph">Phone</label><input type="tel"></div>
-          <div class="fg"><label data-i18n="f.ms">Tell Us About Your Event</label><textarea required></textarea></div>
+          <div class="fg"><label data-i18n="f.em">Email</label><input type="email" name="email" autocomplete="email" required></div>
+          <div class="fg"><label data-i18n="f.ph">Phone</label><input type="tel" name="Phone" autocomplete="tel"></div>
+          <div class="fg"><label data-i18n="f.ms">Tell Us About Your Event</label><textarea name="Message" required></textarea></div>
           <button type="submit" class="f-sub" data-i18n="f.sb">Send Enquiry →</button>
         </form>
       </div>
@@ -1366,9 +1369,29 @@ setInterval(function(){showT((CURRT+1)%3);},7000);
 /* ── FORM ── */
 function doSub(e){
   e.preventDefault();
-  var btn=e.target.querySelector('.f-sub');
-  btn.textContent=t('f.sent');btn.style.background='linear-gradient(135deg,#1a7a4a,#2d9e64)';btn.disabled=true;
-  setTimeout(function(){btn.textContent=t('f.sb');btn.style.background='';btn.disabled=false;e.target.reset();},4000);
+  var form=e.target;
+  var btn=form.querySelector('.f-sub');
+  btn.textContent='Sending…';btn.disabled=true;
+  var data={};
+  new FormData(form).forEach(function(v,k){if(!k.startsWith('_'))data[k]=v;});
+  data['_subject']='New Event Enquiry — Goosebumps';
+  data['_template']='table';
+  fetch('https://formsubmit.co/ajax/goosebumps.party@gmail.com',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify(data)
+  }).then(function(r){return r.json();}).then(function(res){
+    if(res.success==='true'||res.success===true){
+      btn.textContent=t('f.sent');btn.style.background='linear-gradient(135deg,#1a7a4a,#2d9e64)';
+      setTimeout(function(){btn.textContent=t('f.sb');btn.style.background='';btn.disabled=false;form.reset();},5000);
+    } else {
+      btn.textContent='Error — try again';btn.style.background='#7a1a1a';
+      setTimeout(function(){btn.textContent=t('f.sb');btn.style.background='';btn.disabled=false;},4000);
+    }
+  }).catch(function(){
+    btn.textContent='Error — try again';btn.style.background='#7a1a1a';
+    setTimeout(function(){btn.textContent=t('f.sb');btn.style.background='';btn.disabled=false;},4000);
+  });
 }
 
 /* ── INIT ── */
