@@ -952,7 +952,7 @@ footer{background:var(--dark);border-top:1px solid rgba(85,69,165,.14);padding:5
       </ul></div>
     </div>
     <div class="f-bot">
-      <p>© 2026 Goosebumps. <span data-i18n="ft.rts">All rights reserved.</span></p>
+      <p>© 2026 Goosebumps. <span data-i18n="ft.rts">All rights reserved.</span> &nbsp;<button onclick="if(window.gcmsOpen)window.gcmsOpen();" title="Admin Login" style="background:none;border:none;cursor:pointer;padding:2px 4px;opacity:.25;transition:opacity .2s;vertical-align:middle;" onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='.25'"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="rgba(200,200,220,1)"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></button></p>
       <div class="f-soc">
         <a class="sol" href="https://www.instagram.com/goosebumpsevents.eu/" target="_blank">IG</a>
         <a class="sol" href="mailto:info@goosebumpsevents.eu">@</a>
@@ -1547,9 +1547,7 @@ try{handleScroll();}catch(e){console.warn('scroll init:',e);}
 #gcms-toast.show{transform:translateX(-50%) translateY(0)}
 
 /* BADGE */
-#gcms-badge{position:fixed;bottom:24px;left:24px;background:linear-gradient(135deg,#7c5cbf,#5a3d9e);border:none;border-radius:50%;width:48px;height:48px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 24px rgba(124,92,191,.5);z-index:2147483647;transition:all .2s;pointer-events:all}
-#gcms-badge:hover{background:linear-gradient(135deg,#9d7fd4,#7c5cbf);box-shadow:0 6px 32px rgba(124,92,191,.7);transform:scale(1.08)}
-#gcms-badge svg{width:20px;height:20px;fill:#fff}
+
 
 @media(max-width:700px){
 #gcms-pn{flex-direction:column}
@@ -1594,13 +1592,10 @@ try{handleScroll();}catch(e){console.warn('scroll init:',e);}
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.67a19.79 19.79 0 01-3.07-8.67A2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
           Contact &amp; Links
         </button>
-        <button class="gcms-nb" data-tab="publish">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0018 9h-1.26A8 8 0 103 16.3"/></svg>
-          Publish
-        </button>
       </nav>
       <div id="gcms-sba">
-        <button class="gcms-save" id="gcms-save-btn">Save Changes</button>
+        <button class="gcms-save" id="gcms-save-btn">Save &amp; Publish</button>
+        <div id="gcms-status" style="font-size:11px;text-align:center;color:#5a5a80;min-height:16px;padding:0 4px"></div>
         <button class="gcms-xbtn" id="gcms-close-btn">✕ Close Panel</button>
       </div>
     </div>
@@ -1644,32 +1639,27 @@ try{handleScroll();}catch(e){console.warn('scroll init:',e);}
             </div>
           </div>
         </div>
-        <!-- Publish pane -->
-        <div class="gcms-pane" id="gcms-tab-publish">
-          <div class="gcms-pub">
-            <div class="gcms-info">
-              <p>This will publish all saved changes live to <strong>goosebumpsevents.eu</strong> via GitHub.</p>
-              <p style="margin-top:8px">You need a GitHub Personal Access Token with <strong>contents:write</strong> permission for the <strong>DSMeridian/goosebumpsevents.eu</strong> repository.</p>
-              <p style="margin-top:8px">Create one at: <strong>github.com → Settings → Developer settings → Personal access tokens</strong></p>
-            </div>
-            <div class="gcms-pbrow">
-              <label class="gcms-pblab">GitHub Personal Access Token</label>
-              <input class="gcms-inp" id="gcms-token" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
-            </div>
-            <button class="gcms-pbtn" id="gcms-pub-btn">🚀 Publish to Website</button>
-            <div id="gcms-log"></div>
-          </div>
+        <!-- Publish pane (hidden - publish is now automatic on save) -->
+        <div class="gcms-pane" id="gcms-tab-publish" style="display:none">
+          <input class="gcms-inp" id="gcms-token" type="password" autocomplete="off" style="display:none">
+          <button id="gcms-pub-btn" style="display:none"></button>
+          <div id="gcms-log" style="display:none"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Admin badge (always visible when logged in) -->
-  <div id="gcms-badge" title="Admin Login">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-  </div>
 </div>
 <div id="gcms-toast"></div>
+<div id="gcms-setup" style="display:none;position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);align-items:center;justify-content:center;pointer-events:all">
+  <div style="background:#111121;border:1px solid #2a2a45;border-radius:16px;padding:36px;width:420px;max-width:90vw">
+    <h3 style="color:#e8e8f0;font-size:17px;font-weight:700;margin-bottom:8px">One-time setup</h3>
+    <p style="color:#6b6b90;font-size:13px;line-height:1.6;margin-bottom:20px">To publish changes live to the website, enter a GitHub access token once. It will be saved securely so you never need to enter it again.<br><br>Create one at <strong style="color:#9d7fd4">github.com → Settings → Developer settings → Personal access tokens (classic)</strong> with <strong style="color:#9d7fd4">repo</strong> scope.</p>
+    <input id="gcms-setup-tok" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" style="width:100%;background:#0d0d1e;border:1px solid #2a2a45;border-radius:8px;color:#e8e8f0;font-size:14px;padding:12px 16px;outline:none;margin-bottom:12px">
+    <button id="gcms-setup-ok" style="width:100%;background:linear-gradient(135deg,#7c5cbf,#5a3d9e);border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:700;padding:13px;cursor:pointer;margin-bottom:8px">Save Token &amp; Publish</button>
+    <button id="gcms-setup-skip" style="width:100%;background:none;border:none;color:#5a5a80;font-size:13px;cursor:pointer;padding:6px">Skip — just save locally for now</button>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -1718,11 +1708,13 @@ var lgEl=document.getElementById('gcms-lg');
 var pnEl=document.getElementById('gcms-pn');
 var passEl=document.getElementById('gcms-pass');
 var errEl=document.getElementById('gcms-err');
-var badge=document.getElementById('gcms-badge');
 var toast=document.getElementById('gcms-toast');
+var setupEl=document.getElementById('gcms-setup');
 var curLang='en';
 var loggedIn=false;
 var toastTimer=null;
+
+window.gcmsOpen=function(){if(loggedIn){showPanel();}else{showLogin();}};
 
 function showToast(msg,ok){
   clearTimeout(toastTimer);
@@ -1748,7 +1740,6 @@ if(new URLSearchParams(location.search).has('cms')){
   document.addEventListener('DOMContentLoaded',function(){showLogin();});
 }
 
-badge.addEventListener('click',function(){if(loggedIn){showPanel();}else{showLogin();}});
 
 /* ── AUTH ── */
 function showLogin(){
@@ -1793,8 +1784,8 @@ document.getElementById('gcms-close-btn').addEventListener('click',function(){
 });
 
 /* ── TABS ── */
-var TAB_TITLES={text:'Text & Content',images:'Photos & Images',contact:'Contact & Links',publish:'Publish to Website'};
-var TAB_DESCS={text:'Edit all text, labels and translations across all 3 languages',images:'Replace any photo or image on the website',contact:'Update email address, phone number and Instagram link',publish:'Push all saved changes live to goosebumpsevents.eu'};
+var TAB_TITLES={text:'Text & Content',images:'Photos & Images',contact:'Contact & Links'};
+var TAB_DESCS={text:'Edit all text, labels and translations across all 3 languages',images:'Replace any photo or image on the website',contact:'Update email address, phone number and Instagram link'};
 document.querySelectorAll('.gcms-nb').forEach(function(btn){
   btn.addEventListener('click',function(){
     var tab=this.dataset.tab;
@@ -1816,7 +1807,6 @@ function buildUI(){
   buildTextTab();
   buildImagesTab();
   buildContactTab();
-  buildPublishTab();
 }
 
 /* ── TEXT TAB ── */
@@ -1987,29 +1977,60 @@ function buildContactTab(){
 }
 
 /* ── PUBLISH TAB ── */
-function buildPublishTab(){
-  try{
-    var enc=localStorage.getItem('gbcms_tok');
-    if(enc)document.getElementById('gcms-token').value=xorStr(enc,CMS_PASS);
-  }catch(e){}
-  document.getElementById('gcms-pub-btn').addEventListener('click',doPublish);
-}
 
-function xorStr(s,key){
-  var out='';
-  for(var i=0;i<s.length;i++)out+=String.fromCharCode(s.charCodeAt(i)^key.charCodeAt(i%key.length));
-  return out;
-}
-
-/* ── SAVE ── */
+/* ── SAVE & PUBLISH ── */
 document.getElementById('gcms-save-btn').addEventListener('click',saveAll);
 
 function saveAll(){
   collectTextEdits();
   collectContactEdits();
-  try{localStorage.setItem(CMS_KEY,JSON.stringify(overrides));}catch(e){showToast('Could not save (localStorage full?)',false);return;}
+  try{localStorage.setItem(CMS_KEY,JSON.stringify(overrides));}catch(e){showToast('Could not save',false);return;}
   applyAllToDOM();
-  showToast('Changes saved! Reload the page to see them fully applied.');
+  var enc=null;try{enc=localStorage.getItem('gbcms_tok');}catch(e){}
+  var hasToken=enc&&enc.length>4;
+  if(!hasToken){
+    showSetupModal(function(tok){if(tok)triggerPublish(tok);else showToast('Saved locally. Enter a token to publish live.',false);});
+  }else{
+    var tok=null;try{tok=xorStr(enc,CMS_PASS);}catch(e){}
+    if(tok)triggerPublish(tok);else showToast('Token error — please reconnect.',false);
+  }
+}
+
+function showSetupModal(cb){
+  setupEl.style.display='flex';
+  var inp=document.getElementById('gcms-setup-tok');
+  inp.value='';
+  setTimeout(function(){inp.focus();},300);
+  document.getElementById('gcms-setup-ok').onclick=function(){
+    var tok=inp.value.trim();
+    if(!tok){inp.style.borderColor='#9e2a2a';return;}
+    inp.style.borderColor='';
+    try{localStorage.setItem('gbcms_tok',xorStr(tok,CMS_PASS));}catch(e){}
+    setupEl.style.display='none';
+    cb(tok);
+  };
+  document.getElementById('gcms-setup-skip').onclick=function(){
+    setupEl.style.display='none';
+    cb(null);
+  };
+}
+
+function setStatus(msg){
+  var el=document.getElementById('gcms-status');
+  if(el)el.textContent=msg;
+}
+
+function triggerPublish(token){
+  var btn=document.getElementById('gcms-save-btn');
+  btn.disabled=true;
+  setStatus('Publishing to website…');
+  doPublish(token).then(function(){
+    btn.disabled=false;
+    setStatus('');
+  }).catch(function(){
+    btn.disabled=false;
+    setStatus('');
+  });
 }
 
 function collectTextEdits(){
@@ -2079,23 +2100,12 @@ document.addEventListener('DOMContentLoaded',function(){
 });
 
 /* ── PUBLISH ── */
-async function doPublish(){
-  var token=document.getElementById('gcms-token').value.trim();
-  if(!token){showToast('Please enter your GitHub token',false);return;}
-  try{localStorage.setItem('gbcms_tok',xorStr(token,CMS_PASS));}catch(e){}
-  var btn=document.getElementById('gcms-pub-btn');
-  var logEl=document.getElementById('gcms-log');
-  btn.disabled=true;
-  btn.textContent='Publishing…';
-  logEl.style.display='block';
-  logEl.innerHTML='';
-
+async function doPublish(token){
+  if(!token){showToast('No token — please reconnect.',false);return;}
   function log(msg,cls){
-    var p=document.createElement('p');
-    p.className='gcms-log-'+(cls||'info');
-    p.textContent=msg;
-    logEl.appendChild(p);
-    logEl.scrollTop=logEl.scrollHeight;
+    if(cls==='ok')showToast(msg);
+    else if(cls==='err'){}
+    else setStatus(msg);
   }
 
   try{
@@ -2155,14 +2165,10 @@ async function doPublish(){
     });
     if(!updateResp.ok){var ue=await updateResp.json();throw new Error('Ref error: '+(ue.message||updateResp.status));}
 
-    log('✅ Published! GitHub Pages will update in ~1-2 minutes.','ok');
-    showToast('Published successfully!');
+    log('✅ Published!','ok');
+    showToast('Published! Site updates in ~1-2 minutes.');
   }catch(err){
-    log('❌ Error: '+err.message,'err');
     showToast('Publish failed: '+err.message,false);
-  }finally{
-    btn.disabled=false;
-    btn.textContent='🚀 Publish to Website';
   }
 }
 
