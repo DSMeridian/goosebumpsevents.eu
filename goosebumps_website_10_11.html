@@ -1435,11 +1435,20 @@ try{handleScroll();}catch(e){console.warn('scroll init:',e);}
 .gcms-nb.on{background:#1e1640;color:#9d7fd4;font-weight:600}
 .gcms-nb svg{width:16px;height:16px;flex-shrink:0}
 #gcms-sba{padding:16px;border-top:1px solid #1e1e38;display:flex;flex-direction:column;gap:8px}
-.gcms-save{background:linear-gradient(135deg,#7c5cbf,#5a3d9e);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;padding:11px;cursor:pointer;transition:opacity .2s}
-.gcms-save:hover{opacity:.85}
-.gcms-save:active{opacity:.7}
+.gcms-save{background:linear-gradient(135deg,#7c5cbf,#5a3d9e);border:none;border-radius:8px;color:#fff;font-size:13px;font-weight:600;padding:11px;cursor:pointer;transition:background .3s,opacity .2s,transform .1s;position:relative;overflow:hidden}
+.gcms-save:hover:not(:disabled){opacity:.88}
+.gcms-save:active:not(:disabled){transform:scale(.98)}
+.gcms-save:disabled{opacity:.6;cursor:not-allowed}
+.gcms-save.publishing{background:linear-gradient(135deg,#4a6abf,#2a4a9e);animation:gcms-pulse 1.4s ease-in-out infinite}
+.gcms-save.success{background:linear-gradient(135deg,#2d9a5a,#1a7a40)!important;animation:none}
+@keyframes gcms-pulse{0%,100%{opacity:.8}50%{opacity:1}}
+@keyframes gcms-spin{to{transform:rotate(360deg)}}
+.gcms-spinner{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:gcms-spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+#gcms-status{font-size:11px;text-align:center;color:#9d7fd4;min-height:16px;padding:0 4px;transition:opacity .2s}
 .gcms-xbtn{background:#1a1a30;border:1px solid #2a2a45;border-radius:8px;color:#8888a8;font-size:13px;padding:9px;cursor:pointer;transition:all .15s}
 .gcms-xbtn:hover{background:#222240;color:#e8e8f0}
+#gcms-saved-badge{display:none;align-items:center;gap:5px;font-size:11px;color:#4ab870;padding:4px 8px;background:rgba(74,184,112,.1);border:1px solid rgba(74,184,112,.2);border-radius:6px;justify-content:center}
+#gcms-saved-badge.show{display:flex}
 
 /* MAIN AREA */
 #gcms-ma{flex:1;background:#111121;overflow:hidden;display:flex;flex-direction:column}
@@ -1555,9 +1564,10 @@ try{handleScroll();}catch(e){console.warn('scroll init:',e);}
         </button>
       </nav>
       <div id="gcms-sba">
-        <button class="gcms-save" id="gcms-save-btn">Save &amp; Publish</button>
-        <div id="gcms-status" style="font-size:11px;text-align:center;color:#5a5a80;min-height:16px;padding:0 4px"></div>
-        <button class="gcms-xbtn" id="gcms-close-btn">✕ Close Panel</button>
+        <button class="gcms-save" id="gcms-save-btn">💾 Save &amp; Publish</button>
+        <div id="gcms-status"></div>
+        <div id="gcms-saved-badge">✓ Published — live in ~2 min</div>
+        <button class="gcms-xbtn" id="gcms-close-btn">✕ Close</button>
       </div>
     </div>
     <div id="gcms-ma">
@@ -1937,12 +1947,32 @@ document.getElementById('gcms-save-btn').addEventListener('click',saveAll);
 function saveAll(){
   collectTextEdits();
   collectContactEdits();
-  try{localStorage.setItem(CMS_KEY,JSON.stringify(overrides));}catch(e){showToast('Could not save',false);return;}
+  try{localStorage.setItem(CMS_KEY,JSON.stringify(overrides));}catch(e){showToast('Could not save locally',false);return;}
   applyAllToDOM();
   var btn=document.getElementById('gcms-save-btn');
+  var badge=document.getElementById('gcms-saved-badge');
   btn.disabled=true;
-  setStatus('Publishing to website…');
-  doPublish().then(function(){btn.disabled=false;setStatus('');}).catch(function(){btn.disabled=false;setStatus('');});
+  btn.classList.add('publishing');
+  btn.innerHTML='<span class="gcms-spinner"></span>Publishing…';
+  badge.classList.remove('show');
+  setStatus('Uploading to website…');
+  doPublish().then(function(){
+    btn.disabled=false;
+    btn.classList.remove('publishing');
+    btn.classList.add('success');
+    btn.innerHTML='✓ Published!';
+    setStatus('');
+    badge.classList.add('show');
+    setTimeout(function(){
+      btn.classList.remove('success');
+      btn.innerHTML='💾 Save &amp; Publish';
+    },3000);
+  }).catch(function(){
+    btn.disabled=false;
+    btn.classList.remove('publishing');
+    btn.innerHTML='💾 Save &amp; Publish';
+    setStatus('');
+  });
 }
 
 function setStatus(msg){
@@ -2016,76 +2046,28 @@ document.addEventListener('DOMContentLoaded',function(){
   if(overrides.imgs)Object.keys(overrides.imgs).forEach(function(k){applyImgToDOM(k,overrides.imgs[k]);});
 });
 
-/* ── PUBLISH ── */
-async function doPublish(token){
-  if(!token){showToast('No token — please reconnect.',false);return;}
-  function log(msg,cls){
-    if(cls==='ok')showToast(msg);
-    else if(cls==='err'){}
-    else setStatus(msg);
-  }
-
+/* ── PUBLISH via Cloudflare Worker ── */
+async function doPublish(){
   try{
-    log('Fetching current website source…');
+    setStatus('Fetching site source…');
     var rawUrl='https://raw.githubusercontent.com/'+GH_OWNER+'/'+GH_REPO+'/'+GH_BRANCH+'/'+GH_FILE+'?t='+Date.now();
     var rawResp=await fetch(rawUrl,{cache:'no-store'});
-    if(!rawResp.ok)throw new Error('Failed to fetch source: HTTP '+rawResp.status);
-    var html=await rawResp.text();
-    log('Source fetched ('+Math.round(html.length/1024)+'KB)');
-
-    log('Applying changes…');
-    html=applyChangesToHTML(html);
-    log('Changes applied');
-
-    var headers={'Authorization':'token '+token,'Content-Type':'application/json','Accept':'application/vnd.github.v3+json'};
-
-    log('Getting branch info…');
-    var refResp=await fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/git/refs/heads/'+GH_BRANCH,{headers});
-    if(!refResp.ok){var re=await refResp.json();throw new Error('Branch error: '+(re.message||refResp.status));}
-    var refData=await refResp.json();
-    var commitSha=refData.object.sha;
-
-    log('Getting commit tree…');
-    var commitResp=await fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/git/commits/'+commitSha,{headers});
-    var commitData=await commitResp.json();
-    var treeSha=commitData.tree.sha;
-
-    log('Creating file blob (this may take a moment)…');
-    var encoded=encodeHTML(html);
-    var blobResp=await fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/git/blobs',{
-      method:'POST',headers,
-      body:JSON.stringify({content:encoded,encoding:'base64'})
+    if(!rawResp.ok)throw new Error('Could not fetch site source (HTTP '+rawResp.status+')');
+    var src=await rawResp.text();
+    setStatus('Applying changes…');
+    src=applyChangesToHTML(src);
+    var htmlB64=encodeHTML(src);
+    setStatus('Uploading…');
+    var resp=await fetch(WORKER_URL,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({key:WORKER_KEY,htmlB64:htmlB64})
     });
-    if(!blobResp.ok){var be=await blobResp.json();throw new Error('Blob error: '+(be.message||blobResp.status));}
-    var blobData=await blobResp.json();
-
-    log('Creating new tree…');
-    var treeResp=await fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/git/trees',{
-      method:'POST',headers,
-      body:JSON.stringify({base_tree:treeSha,tree:[{path:GH_FILE,mode:'100644',type:'blob',sha:blobData.sha}]})
-    });
-    if(!treeResp.ok){var te=await treeResp.json();throw new Error('Tree error: '+(te.message||treeResp.status));}
-    var treeData=await treeResp.json();
-
-    log('Creating commit…');
-    var newCommitResp=await fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/git/commits',{
-      method:'POST',headers,
-      body:JSON.stringify({message:'Update content via CMS',tree:treeData.sha,parents:[commitSha]})
-    });
-    if(!newCommitResp.ok){var nce=await newCommitResp.json();throw new Error('Commit error: '+(nce.message||newCommitResp.status));}
-    var newCommitData=await newCommitResp.json();
-
-    log('Updating branch…');
-    var updateResp=await fetch('https://api.github.com/repos/'+GH_OWNER+'/'+GH_REPO+'/git/refs/heads/'+GH_BRANCH,{
-      method:'PATCH',headers,
-      body:JSON.stringify({sha:newCommitData.sha})
-    });
-    if(!updateResp.ok){var ue=await updateResp.json();throw new Error('Ref error: '+(ue.message||updateResp.status));}
-
-    log('✅ Published!','ok');
-    showToast('Published! Site updates in ~1-2 minutes.');
+    var result=await resp.json();
+    if(!resp.ok||result.error)throw new Error(result.error||'Upload error ('+resp.status+')');
   }catch(err){
     showToast('Publish failed: '+err.message,false);
+    throw err;
   }
 }
 
