@@ -1548,7 +1548,7 @@ try{handleScroll();}catch(e){console.warn('scroll init:',e);}
 #gcms-toast.show{transform:translateX(-50%) translateY(0)}
 
 /* BADGE */
-#gcms-badge{position:fixed;bottom:20px;right:20px;background:#0d0d1e;border:1px solid #2a2a45;border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4);z-index:2147483646;transition:all .2s;pointer-events:all}
+#gcms-badge{position:fixed;bottom:20px;right:20px;background:#0d0d1e;border:1px solid #2a2a45;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,.5);z-index:2147483647;transition:all .2s;pointer-events:all}
 #gcms-badge:hover{background:#1e1640;border-color:#7c5cbf}
 #gcms-badge svg{width:18px;height:18px;fill:#7c5cbf}
 
@@ -1666,8 +1666,8 @@ try{handleScroll();}catch(e){console.warn('scroll init:',e);}
   </div>
 
   <!-- Admin badge (always visible when logged in) -->
-  <div id="gcms-badge" style="display:none" title="Open CMS">
-    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+  <div id="gcms-badge" title="Admin Login">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
   </div>
 </div>
 <div id="gcms-toast"></div>
@@ -1749,7 +1749,7 @@ if(new URLSearchParams(location.search).has('cms')){
   document.addEventListener('DOMContentLoaded',function(){showLogin();});
 }
 
-badge.addEventListener('click',function(){showPanel();});
+badge.addEventListener('click',function(){if(loggedIn){showPanel();}else{showLogin();}});
 
 /* ── AUTH ── */
 function showLogin(){
@@ -1784,7 +1784,6 @@ function showPanel(){
   loggedIn=true;
   root.classList.add('active');
   pnEl.classList.add('show');
-  badge.style.display='flex';
   buildUI();
 }
 
