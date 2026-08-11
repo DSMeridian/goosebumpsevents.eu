@@ -1612,21 +1612,14 @@ try{handleScroll();}catch(e){console.warn('scroll init:',e);}
 
 </div>
 <div id="gcms-toast"></div>
-<div id="gcms-setup" style="display:none;position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);align-items:center;justify-content:center;pointer-events:all">
-  <div style="background:#111121;border:1px solid #2a2a45;border-radius:16px;padding:36px;width:420px;max-width:90vw">
-    <h3 style="color:#e8e8f0;font-size:17px;font-weight:700;margin-bottom:8px">One-time setup</h3>
-    <p style="color:#6b6b90;font-size:13px;line-height:1.6;margin-bottom:20px">To publish changes live to the website, enter a GitHub access token once. It will be saved securely so you never need to enter it again.<br><br>Create one at <strong style="color:#9d7fd4">github.com → Settings → Developer settings → Personal access tokens (classic)</strong> with <strong style="color:#9d7fd4">repo</strong> scope.</p>
-    <input id="gcms-setup-tok" type="password" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" style="width:100%;background:#0d0d1e;border:1px solid #2a2a45;border-radius:8px;color:#e8e8f0;font-size:14px;padding:12px 16px;outline:none;margin-bottom:12px">
-    <button id="gcms-setup-ok" style="width:100%;background:linear-gradient(135deg,#7c5cbf,#5a3d9e);border:none;border-radius:8px;color:#fff;font-size:14px;font-weight:700;padding:13px;cursor:pointer;margin-bottom:8px">Save Token &amp; Publish</button>
-    <button id="gcms-setup-skip" style="width:100%;background:none;border:none;color:#5a5a80;font-size:13px;cursor:pointer;padding:6px">Skip — just save locally for now</button>
-  </div>
-</div>
 
 <script>
 (function(){
 'use strict';
 
 var CMS_PASS='GSBMPS2026!';
+var WORKER_URL='https://cms-publish.goosebumpsevents.workers.dev';
+var WORKER_KEY='GSBMPS2026!';  // must match CMS_KEY secret in Cloudflare Worker
 var CMS_KEY='gbcms_v2';
 var GH_OWNER='DSMeridian';
 var GH_REPO='goosebumpsevents.eu';
@@ -1670,7 +1663,6 @@ var pnEl=document.getElementById('gcms-pn');
 var passEl=document.getElementById('gcms-pass');
 var errEl=document.getElementById('gcms-err');
 var toast=document.getElementById('gcms-toast');
-var setupEl=document.getElementById('gcms-setup');
 var curLang='en';
 var loggedIn=false;
 var toastTimer=null;
@@ -1947,51 +1939,15 @@ function saveAll(){
   collectContactEdits();
   try{localStorage.setItem(CMS_KEY,JSON.stringify(overrides));}catch(e){showToast('Could not save',false);return;}
   applyAllToDOM();
-  var enc=null;try{enc=localStorage.getItem('gbcms_tok');}catch(e){}
-  var hasToken=enc&&enc.length>4;
-  if(!hasToken){
-    showSetupModal(function(tok){if(tok)triggerPublish(tok);else showToast('Saved locally. Enter a token to publish live.',false);});
-  }else{
-    var tok=null;try{tok=xorStr(enc,CMS_PASS);}catch(e){}
-    if(tok)triggerPublish(tok);else showToast('Token error — please reconnect.',false);
-  }
-}
-
-function showSetupModal(cb){
-  setupEl.style.display='flex';
-  var inp=document.getElementById('gcms-setup-tok');
-  inp.value='';
-  setTimeout(function(){inp.focus();},300);
-  document.getElementById('gcms-setup-ok').onclick=function(){
-    var tok=inp.value.trim();
-    if(!tok){inp.style.borderColor='#9e2a2a';return;}
-    inp.style.borderColor='';
-    try{localStorage.setItem('gbcms_tok',xorStr(tok,CMS_PASS));}catch(e){}
-    setupEl.style.display='none';
-    cb(tok);
-  };
-  document.getElementById('gcms-setup-skip').onclick=function(){
-    setupEl.style.display='none';
-    cb(null);
-  };
+  var btn=document.getElementById('gcms-save-btn');
+  btn.disabled=true;
+  setStatus('Publishing to website…');
+  doPublish().then(function(){btn.disabled=false;setStatus('');}).catch(function(){btn.disabled=false;setStatus('');});
 }
 
 function setStatus(msg){
   var el=document.getElementById('gcms-status');
   if(el)el.textContent=msg;
-}
-
-function triggerPublish(token){
-  var btn=document.getElementById('gcms-save-btn');
-  btn.disabled=true;
-  setStatus('Publishing to website…');
-  doPublish(token).then(function(){
-    btn.disabled=false;
-    setStatus('');
-  }).catch(function(){
-    btn.disabled=false;
-    setStatus('');
-  });
 }
 
 function collectTextEdits(){
