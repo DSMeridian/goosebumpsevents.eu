@@ -1,0 +1,4 @@
+name = "cms-publish"
+main = "cms-publish-worker.js"
+compatibility_date = "2024-01-01"
+account_id = "d9ff13459b9ef4643e9d458138a657bf"
