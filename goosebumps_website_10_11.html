@@ -2072,12 +2072,13 @@ async function doPublish(){
 }
 
 function encodeHTML(str){
-  var chunks=[];
-  var chunkSize=32768;
-  for(var i=0;i<str.length;i+=chunkSize){
-    chunks.push(btoa(unescape(encodeURIComponent(str.slice(i,i+chunkSize)))));
+  var bytes=new TextEncoder().encode(str);
+  var binary='';
+  var chunkSize=8192;
+  for(var i=0;i<bytes.length;i+=chunkSize){
+    binary+=String.fromCharCode.apply(null,bytes.subarray(i,i+chunkSize));
   }
-  return chunks.join('');
+  return btoa(binary);
 }
 
 function applyChangesToHTML(html){
