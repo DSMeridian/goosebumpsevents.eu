@@ -1424,6 +1424,7 @@ try{handleScroll();}catch(e){console.warn('scroll init:',e);}
 /* PANEL — right-side preview panel */
 #gcms-pn{position:fixed;top:0;right:0;bottom:0;width:380px;max-width:100vw;display:flex;flex-direction:column;pointer-events:all;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 48px rgba(0,0,0,.65);cursor:auto}
 #gcms-pn *{cursor:auto}
+body.gcms-open,body.gcms-open *{cursor:auto!important}
 #gcms-pn.show{transform:none}
 #gcms-sb{width:100%;background:#0d0d1e;border-bottom:1px solid #1e1e38;display:flex;flex-direction:column;flex-shrink:0}
 #gcms-sbh{padding:12px 16px 8px;border-bottom:1px solid #1e1e38}
@@ -1739,12 +1740,14 @@ function doLogin(){
 function showPanel(){
   loggedIn=true;
   pnEl.classList.add('show');
+  document.body.classList.add('gcms-open');
   buildUI();
 }
 
 document.getElementById('gcms-close-btn').addEventListener('click',function(){
   pnEl.classList.remove('show');
   lgEl.classList.remove('show');
+  document.body.classList.remove('gcms-open');
   clearPreviewHighlight();
 });
 
