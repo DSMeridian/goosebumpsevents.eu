@@ -1020,7 +1020,7 @@ function setLang(l){LNG=l;applyTr();}
 
 /* ── LOADER ── */
 var loaderShownAt = Date.now();
-var MIN_LOADER_MS = 2200;
+var MIN_LOADER_MS = 1200;
 
 function hideLoader(){
   var l=document.getElementById('loader');
@@ -1034,13 +1034,14 @@ function hideLoader(){
 }
 /* Block scroll until loader gone */
 document.body.style.overflow='hidden';
-/* Hide after minimum display time */
-if(document.readyState==='complete'){
+/* All content is embedded — DOMContentLoaded fires as soon as HTML is parsed,
+   no need to wait for external fonts (Google Fonts) which delays window.load */
+if(document.readyState==='complete'||document.readyState==='interactive'){
   hideLoader();
 } else {
-  window.addEventListener('load', hideLoader);
-  /* Hard fallback */
-  setTimeout(hideLoader, 5000);
+  document.addEventListener('DOMContentLoaded', hideLoader);
+  /* Hard fallback — catches any edge case */
+  setTimeout(hideLoader, 2500);
 }
 
 /* ── SCROLL PROGRESS ── */
