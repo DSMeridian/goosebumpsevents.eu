@@ -4,7 +4,7 @@
 /* LOGIN */
 #gcms-lg{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,5,15,.92);backdrop-filter:blur(12px);opacity:0;pointer-events:none;transition:opacity .25s}
 #gcms-lg.show{opacity:1;pointer-events:all}
-#gcms-lc{position:relative;max-width:calc(100vw - 32px);background:#111121;border:1px solid #2a2a45;border-radius:16px;padding:40px 36px;width:360px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.7)}
+#gcms-lc{background:#111121;border:1px solid #2a2a45;border-radius:16px;padding:40px 36px;width:360px;text-align:center;box-shadow:0 32px 80px rgba(0,0,0,.7)}
 #gcms-lc h2{color:#e8e8f0;font-size:22px;font-weight:700;margin-bottom:6px}
 #gcms-lc .gcms-sub{color:#6b6b90;font-size:13px;margin-bottom:28px}
 #gcms-lc input{width:100%;background:#0d0d1e;border:1px solid #2a2a45;border-radius:8px;color:#e8e8f0;font-size:15px;padding:12px 16px;outline:none;letter-spacing:2px;transition:border-color .2s}
@@ -18,9 +18,11 @@
 #gcms-topbar{position:fixed;top:0;left:0;right:0;background:#0d0d1e;border-bottom:1px solid #1e1e38;display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:6px 8px;z-index:2147483647;pointer-events:none;transform:translateY(-100%);transition:transform .3s cubic-bezier(.4,0,.2,1);box-sizing:border-box;cursor:auto}
 #gcms-topbar.show{transform:none;pointer-events:all}
 body.gcms-open{padding-top:62px}
+body.gcms-open,body.gcms-open *{cursor:auto!important}
 
 /* PANEL — right-side preview panel, starts below topbar when open */
 #gcms-pn{position:fixed;top:0;right:0;bottom:0;width:380px;max-width:100vw;display:flex;flex-direction:column;pointer-events:all;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1),top .3s cubic-bezier(.4,0,.2,1);box-shadow:-8px 0 48px rgba(0,0,0,.65);cursor:auto;overflow:hidden}
+#gcms-pn *{cursor:auto}
 #gcms-pn.show{transform:none;top:62px}
 #gcms-sb{width:100%;background:#0d0d1e;border-bottom:1px solid #1e1e38;display:flex;flex-direction:column;flex-shrink:0}
 #gcms-sbh{padding:10px 16px;border-bottom:1px solid #1e1e38}
@@ -43,7 +45,6 @@ body.gcms-open{padding-top:62px}
 #gcms-status{font-size:11px;text-align:center;color:#9d7fd4;min-height:16px;padding:0 4px;transition:opacity .2s}
 .gcms-xbtn{background:#1a1a30;border:1px solid #2a2a45;border-radius:8px;color:#8888a8;font-size:13px;padding:9px;cursor:pointer;transition:all .15s}
 .gcms-xbtn:hover{background:#222240;color:#e8e8f0}
-/* Status badge */
 #gcms-saved-badge{display:none;align-items:center;gap:5px;font-size:11px;color:#4ab870;padding:4px 8px;background:rgba(74,184,112,.1);border:1px solid rgba(74,184,112,.2);border-radius:6px;justify-content:center}
 #gcms-saved-badge.show{display:flex}
 
@@ -76,13 +77,11 @@ body.gcms-open{padding-top:62px}
 .gcms-sec.open .gcms-arr{transform:rotate(90deg)}
 .gcms-scb{display:none;padding:0 18px 16px}
 .gcms-sec.open .gcms-scb{display:block}
-.gcms-row{display:flex;flex-direction:column;gap:5px;padding:12px 0;border-bottom:1px solid #131328}
+.gcms-row{display:grid;grid-template-columns:160px 1fr;align-items:start;gap:12px;padding:10px 0;border-bottom:1px solid #1a1a30}
 .gcms-row:last-child{border-bottom:none}
-.gcms-lbl{color:#9d7fd4;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;line-height:1.3}
-.gcms-lbl-sub{color:#4a4a6a;font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;display:block;margin-top:1px}
-.gcms-inp{background:#13132a;border:1px solid #252545;border-radius:8px;color:#e0e0f4;font-size:13.5px;padding:9px 12px;width:100%;outline:none;resize:vertical;min-height:38px;font-family:inherit;transition:border-color .2s,background .2s;line-height:1.5}
-.gcms-inp:focus{border-color:#7c5cbf;background:#181830}
-.gcms-inp:not(:placeholder-shown){border-color:#2a2a50}
+.gcms-lbl{color:#6b6b90;font-size:12px;padding-top:10px;word-break:break-word;line-height:1.4}
+.gcms-inp{background:#1a1a30;border:1px solid #2a2a45;border-radius:6px;color:#e8e8f0;font-size:13px;padding:8px 12px;width:100%;outline:none;resize:vertical;min-height:36px;font-family:inherit;transition:border-color .2s}
+.gcms-inp:focus{border-color:#7c5cbf}
 
 /* IMAGES TAB */
 .gcms-igrd{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px}
@@ -129,12 +128,4 @@ body.gcms-open{padding-top:62px}
 body.gcms-open{padding-top:56px!important}
 #gcms-topbar{padding:4px 6px}
 .gcms-nb{font-size:10px;padding:6px 2px}
-}
-
-/* CURSOR — keep the site's custom cursor while the CMS is open.
-   The dot/ring are lifted above the CMS layers (cms.js also moves them to the end
-   of <body> so they win the stacking order), and the native cursor stays hidden. */
-#cur,#cur-ring{z-index:2147483647}
-@media (hover:hover) and (pointer:fine){
-  body.gcms-active,body.gcms-active *{cursor:none!important}
 }

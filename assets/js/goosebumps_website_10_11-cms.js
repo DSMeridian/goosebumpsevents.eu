@@ -8,11 +8,7 @@ var CMS_KEY='gbcms_v2';
 var GH_OWNER='DSMeridian';
 var GH_REPO='goosebumpsevents.eu';
 var GH_FILE='index.html';
-var CONTENT_FILE='assets/js/content.js';  // IMGS paths + TR translations live here
-var TEXT_FILES=['index.html','assets/js/content.js','assets/js/main.js'];  // files that may contain contact details
 var GH_BRANCH='main';
-
-var KEY_LABELS={'nav.ab':'About Us','nav.sv':'Services','nav.gl':'Gallery','nav.tm':'Our Team','nav.ct':'Contact','h.eye':'Eyebrow label','h.ttl':'Main headline','h.sub':'Subheadline','h.c1':'Button 1','h.c2':'Button 2','h.scr':'Scroll hint','a.lbl':'Section label','a.ttl':'Section title','a.p1':'Paragraph 1','a.p2':'Paragraph 2','a.q':'Pull quote','s.yr':'Stat: Years','s.ev':'Stat: Events','s.co':'Stat: Countries','s.di':'Stat 4 label','nb.yr':'Stat: Years number','nb.ev':'Stat: Events number','nb.co':'Stat: Countries number','nb.di':'Stat 4 number','sv.lbl':'Section label','sv.ttl':'Section title','sv.intro':'Intro text','s1.n':'Service 1 — Name','s1.d':'Service 1 — Description','s2.n':'Service 2 — Name','s2.d':'Service 2 — Description','s3.n':'Service 3 — Name','s3.d':'Service 3 — Description','s4.n':'Service 4 — Name','s4.d':'Service 4 — Description','s5.n':'Service 5 — Name','s5.d':'Service 5 — Description','s6.n':'Service 6 — Name','s6.d':'Service 6 — Description','pb1.h':'Quote 1 — Heading','pb1.p':'Quote 1 — Body text','pb2.h':'Quote 2 — Heading','pb2.p':'Quote 2 — Body text','pr.lbl':'Section label','pr.ttl':'Section title','p1.t':'Step 1 — Title','p1.d':'Step 1 — Description','p2.t':'Step 2 — Title','p2.d':'Step 2 — Description','p3.t':'Step 3 — Title','p3.d':'Step 3 — Description','p4.t':'Step 4 — Title','p4.d':'Step 4 — Description','g.lbl':'Section label','g.ttl':'Section title','gt.all':'Filter: All','gt.lt':'Filter: Lighting','gt.mu':'Filter: Music','gt.ev':'Filter: Events','tm.lbl':'Section label','tm.ttl':'Section title','tm.r1':'Member 1 — Role','tm.r2':'Member 2 — Role','tm.r3':'Member 3 — Role','tm.r4':'Member 4 — Role','tm.r5':'Member 5 — Role','tm.r6':'Member 6 — Role','tm.b1':'Member 1 — Bio','tm.b2':'Member 2 — Bio','tm.b3':'Member 3 — Bio','tm.b4':'Member 4 — Bio','tm.b5':'Member 5 — Bio','tm.b6':'Member 6 — Bio','t0.t':'Member 1 — Name','t0.a':'Member 1 — Alt text','t1.t':'Member 2 — Name','t1.a':'Member 2 — Alt text','t2.t':'Member 3 — Name','t2.a':'Member 3 — Alt text','w.lbl':'Section label','w.ttl':'Section title','w.badge':'Badge text','w1.t':'Reason 1 — Title','w1.d':'Reason 1 — Description','w2.t':'Reason 2 — Title','w2.d':'Reason 2 — Description','w3.t':'Reason 3 — Title','w3.d':'Reason 3 — Description','w4.t':'Reason 4 — Title','w4.d':'Reason 4 — Description','c.lbl':'Section label','c.ttl':'Section title','c.intro':'Intro text','c.loc':'Location text','f.fn':'Field: First name','f.ln':'Field: Last name','f.em':'Field: Email','f.ph':'Field: Phone','f.ty':'Field: Event type','f.dt':'Field: Date','f.lo':'Field: Location','f.ms':'Field: Message','f.sb':'Submit button','f.t0':'Type option: Corporate','f.t1':'Type option: Wedding','f.t2':'Type option: Birthday','f.t3':'Type option: Festival','f.t4':'Type option: Private','f.t5':'Type option: Exhibition','f.t6':'Type option: Other','f.sent':'Success message','ft.tag':'Footer tagline','ft.nav':'Heading: Navigation','ft.sv':'Heading: Services','ft.con':'Heading: Contact','ft.rts':'Copyright text','loader':'Loading screen text'};
 
 var TR_SECTIONS=[
   {title:'Navigation',keys:['nav.ab','nav.sv','nav.gl','nav.tm','nav.ct']},
@@ -43,10 +39,6 @@ if(typeof TR!=='undefined'&&overrides.tr){
 if(typeof IMGS!=='undefined'&&overrides.imgs){
   Object.keys(overrides.imgs).forEach(function(k){IMGS[k]=overrides.imgs[k];});
 }
-
-/* ── CUSTOM CURSOR ABOVE THE CMS ──
-   Move the cursor dot/ring after the CMS markup so they render on top of it */
-['cur-ring','cur'].forEach(function(id){var el=document.getElementById(id);if(el)document.body.appendChild(el);});
 
 /* ── DOM VARS ── */
 var root=document.getElementById('gcms');
@@ -89,7 +81,6 @@ if(new URLSearchParams(location.search).has('cms')){
 /* ── AUTH ── */
 function showLogin(){
   root.classList.add('active');
-  document.body.classList.add('gcms-active');
   lgEl.classList.add('show');
   passEl.value='';
   errEl.textContent='';
@@ -99,14 +90,6 @@ function showLogin(){
 function hideLg(){
   lgEl.classList.remove('show');
 }
-
-function closeLogin(){
-  hideLg();
-  if(!pnEl.classList.contains('show'))document.body.classList.remove('gcms-active');
-}
-document.getElementById('gcms-close-lg').addEventListener('click',closeLogin);
-lgEl.addEventListener('click',function(e){if(e.target===lgEl)closeLogin();});
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lgEl.classList.contains('show'))closeLogin();});
 
 document.getElementById('gcms-login-btn').addEventListener('click',doLogin);
 passEl.addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
@@ -129,7 +112,7 @@ function showPanel(){
   loggedIn=true;
   tbEl.classList.add('show');
   pnEl.classList.add('show');
-  document.body.classList.add('gcms-open','gcms-active');
+  document.body.classList.add('gcms-open');
   buildUI();
 }
 
@@ -137,7 +120,7 @@ document.getElementById('gcms-close-btn').addEventListener('click',function(){
   tbEl.classList.remove('show');
   pnEl.classList.remove('show');
   lgEl.classList.remove('show');
-  document.body.classList.remove('gcms-open','gcms-active');
+  document.body.classList.remove('gcms-open');
   clearPreviewHighlight();
 });
 
@@ -201,15 +184,13 @@ function buildTextTab(){
       row.className='gcms-row';
       var lbl=document.createElement('div');
       lbl.className='gcms-lbl';
-      var labelText=KEY_LABELS[key]||key;
-      lbl.innerHTML=labelText+(KEY_LABELS[key]?'<span class="gcms-lbl-sub">'+key+'</span>':'');
+      lbl.textContent=key;
       var val=(typeof TR!=='undefined'&&TR.en&&TR.en[key])||'';
-      var cleanVal=val.replace(/<[^>]+>/g,'');
-      var isLong=cleanVal.length>80;
+      var isLong=val.replace(/<[^>]+>/g,'').length>80;
       var inp;
       if(isLong){
         inp=document.createElement('textarea');
-        inp.rows=Math.min(5,Math.ceil(cleanVal.length/60)+1);
+        inp.rows=3;
       }else{
         inp=document.createElement('input');
         inp.type='text';
@@ -217,8 +198,6 @@ function buildTextTab(){
       inp.className='gcms-inp';
       inp.dataset.key=key;
       inp.value=(typeof TR!=='undefined'&&TR[curLang]&&TR[curLang][key])||'';
-      inp.placeholder=cleanVal.slice(0,80)||(KEY_LABELS[key]||key);
-      // Live preview: update DOM as you type
       var _debTimer;
       inp.addEventListener('input',function(){
         var k=this.dataset.key,v=this.value;
@@ -226,7 +205,6 @@ function buildTextTab(){
         clearTimeout(_debTimer);
         _debTimer=setTimeout(function(){if(typeof applyTr==='function')applyTr();},80);
       });
-      // Highlight the element being edited on the live page
       inp.addEventListener('focus',function(){highlightPreview(this.dataset.key);});
       inp.addEventListener('blur',function(){clearPreviewHighlight();});
       row.appendChild(lbl);
@@ -341,21 +319,12 @@ function applyImgToDOM(key,val){
 }
 
 /* ── CONTACT TAB ── */
-function domContact(){
-  var m=document.querySelector('a[href^="mailto:"]'),p=document.querySelector('a[href^="tel:"]'),ig=document.querySelector('a[href*="instagram.com"]');
-  return {
-    email:m?m.getAttribute('href').replace(/^mailto:/,''):'',
-    phone:p?p.textContent.trim():'',
-    phoneHref:p?p.getAttribute('href').replace(/^tel:/,''):'',
-    instagram:ig?ig.getAttribute('href'):''
-  };
-}
 function buildContactTab(){
-  var c=overrides.contact||{},d=domContact();
-  document.getElementById('gcms-c-email').value=c.email||d.email||'info@goosebumpsevents.eu';
-  document.getElementById('gcms-c-phone').value=c.phone||d.phone||'+32 456 95 19 69';
-  document.getElementById('gcms-c-phonehref').value=c.phoneHref||d.phoneHref||'+3245695169';
-  document.getElementById('gcms-c-ig').value=c.instagram||d.instagram||'https://www.instagram.com/goosebumpsevents.eu/';
+  var c=overrides.contact||{};
+  document.getElementById('gcms-c-email').value=c.email||'info@goosebumpsevents.eu';
+  document.getElementById('gcms-c-phone').value=c.phone||'+32 456 95 19 69';
+  document.getElementById('gcms-c-phonehref').value=c.phoneHref||'+3245695169';
+  document.getElementById('gcms-c-ig').value=c.instagram||'https://www.instagram.com/goosebumpsevents.eu/';
 }
 
 /* ── PUBLISH TAB ── */
@@ -433,7 +402,6 @@ function highlightPreview(key){
   if(!target)return;
   _hlEl=target;
   target.classList.add('gcms-hl');
-  // Scroll target into the visible portion of the page (left of panel)
   var rect=target.getBoundingClientRect();
   var panelW=380;
   var visW=window.innerWidth-panelW;
@@ -442,7 +410,6 @@ function highlightPreview(key){
     var scrollTop=target.getBoundingClientRect().top+window.scrollY-window.innerHeight/2+rect.height/2;
     window.scrollTo({top:Math.max(0,scrollTop),behavior:'smooth'});
   }
-  // Show floating label badge
   if(!_hlLabel){
     _hlLabel=document.createElement('div');
     _hlLabel.id='gcms-preview-label';
@@ -467,7 +434,6 @@ function clearPreviewHighlight(){
   if(_hlLabel)_hlLabel.classList.remove('show');
 }
 
-/* Wire contact inputs for live preview */
 function wireContactLivePreview(){
   ['gcms-c-email','gcms-c-phone','gcms-c-phonehref','gcms-c-ig'].forEach(function(id){
     var el=document.getElementById(id);
@@ -491,7 +457,7 @@ function applyContactToDOM(){
   if(c.email){
     document.querySelectorAll('a[href^="mailto:"]').forEach(function(a){
       a.href='mailto:'+c.email;
-      if(a.textContent&&a.textContent.trim()!=='@'&&a.textContent.indexOf('@')>-1)a.textContent=c.email;
+      if(a.textContent&&a.textContent.indexOf('@')>-1)a.textContent=c.email;
     });
     document.querySelectorAll('form[action*="formsubmit"]').forEach(function(f){
       f.action='https://formsubmit.co/'+c.email;
@@ -521,63 +487,32 @@ document.addEventListener('DOMContentLoaded',function(){
   if(overrides.imgs)Object.keys(overrides.imgs).forEach(function(k){applyImgToDOM(k,overrides.imgs[k]);});
 });
 
-/* ── PUBLISH via Cloudflare Worker ──
-   The site is split into several files, so publishing:
-     1. fetches the current index.html, assets/js/content.js and assets/js/main.js from GitHub,
-     2. rewrites the TR block / IMGS paths in content.js and contact details in every text file,
-     3. turns newly uploaded photos (data: URLs) into real files under assets/images/,
-     4. sends only the changed files to the Worker, which commits them in one commit. */
-async function fetchSource(path){
-  var url='https://raw.githubusercontent.com/'+GH_OWNER+'/'+GH_REPO+'/'+GH_BRANCH+'/'+path+'?t='+Date.now();
-  var r=await fetch(url,{cache:'no-store'});
-  if(!r.ok)throw new Error('Could not fetch '+path+' (HTTP '+r.status+')');
-  return r.text();
-}
-
+/* ── PUBLISH via Cloudflare Worker ── */
 async function doPublish(){
   try{
     setStatus('Fetching site source…');
-    var srcs={};
-    for(var i=0;i<TEXT_FILES.length;i++){srcs[TEXT_FILES[i]]=await fetchSource(TEXT_FILES[i]);}
-
+    var rawUrl='https://raw.githubusercontent.com/'+GH_OWNER+'/'+GH_REPO+'/'+GH_BRANCH+'/'+GH_FILE+'?t='+Date.now();
+    var rawResp=await fetch(rawUrl,{cache:'no-store'});
+    if(!rawResp.ok)throw new Error('Could not fetch site source (HTTP '+rawResp.status+')');
+    var src=await rawResp.text();
     setStatus('Applying changes…');
-    var ver=Date.now().toString(36);
-    var files=[],newPaths={};
-    if(overrides.imgs){
-      Object.keys(overrides.imgs).forEach(function(key){
-        var mm=/^data:image\/(jpeg|png|webp);base64,(.+)$/.exec(overrides.imgs[key]||'');
-        if(!mm||!/^[a-z0-9_]+$/i.test(key))return;
-        var path='assets/images/'+key+'.'+(mm[1]==='jpeg'?'jpg':mm[1]);
-        files.push({path:path,b64:mm[2]});
-        newPaths[key]=path+'?v='+ver;   // cache-bust the replaced file
-      });
-    }
-    TEXT_FILES.forEach(function(p){
-      var out=p===CONTENT_FILE?applyContentChanges(srcs[p],newPaths):srcs[p];
-      out=applyContactChanges(out);
-      if(out!==srcs[p])files.push({path:p,b64:encodeText(out)});
-    });
-    if(!files.length){showToast('Nothing new to publish');return;}
-
+    src=applyChangesToHTML(src);
+    var htmlB64=encodeHTML(src);
     setStatus('Uploading…');
     var resp=await fetch(WORKER_URL,{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({key:WORKER_KEY,files:files})
+      body:JSON.stringify({key:WORKER_KEY,htmlB64:htmlB64})
     });
     var result=await resp.json();
     if(!resp.ok||result.error)throw new Error(result.error||'Upload error ('+resp.status+')');
-
-    // Uploaded photos now live as files: remember their paths instead of the heavy data URLs
-    Object.keys(newPaths).forEach(function(k){overrides.imgs[k]=newPaths[k];});
-    try{localStorage.setItem(CMS_KEY,JSON.stringify(overrides));}catch(e){}
   }catch(err){
     showToast('Publish failed: '+err.message,false);
     throw err;
   }
 }
 
-function encodeText(str){
+function encodeHTML(str){
   var bytes=new TextEncoder().encode(str);
   var binary='';
   var chunkSize=8192;
@@ -587,45 +522,43 @@ function encodeText(str){
   return btoa(binary);
 }
 
-/* content.js: replace the whole TR block and any updated IMGS["key"]="path" entries */
-function applyContentChanges(js,newPaths){
-  if(overrides.tr&&(Object.keys(overrides.tr.en||{}).length||Object.keys(overrides.tr.fr||{}).length||Object.keys(overrides.tr.nl||{}).length)){
-    var trStart=js.indexOf('\nvar TR=');
-    var trEnd=js.indexOf('\n/* END TR */');
-    if(trStart>-1&&trEnd>trStart){
-      var fullTR={en:Object.assign({},typeof TR!=='undefined'?TR.en:{}),fr:Object.assign({},typeof TR!=='undefined'?TR.fr:{}),nl:Object.assign({},typeof TR!=='undefined'?TR.nl:{})};
-      js=js.slice(0,trStart+1)+'var TR='+JSON.stringify(fullTR)+';'+js.slice(trEnd);
-    }else{
-      throw new Error('TR markers not found in '+CONTENT_FILE);
-    }
-  }
-  Object.keys(newPaths||{}).forEach(function(key){
-    var pattern='IMGS["'+key+'"]="';
-    var start=js.indexOf(pattern);
-    var line='IMGS["'+key+'"]="'+newPaths[key]+'";';
-    if(start>-1){
-      var valStart=start+pattern.length;
-      var valEnd=js.indexOf('"',valStart);
-      if(valEnd>-1)js=js.slice(0,valStart)+newPaths[key]+js.slice(valEnd);
-    }else{
-      var anchor=js.indexOf('\nvar IMGS={};');
-      if(anchor>-1){anchor+='\nvar IMGS={};'.length;js=js.slice(0,anchor)+'\n'+line+js.slice(anchor);}
-    }
-  });
-  return js;
-}
-
-/* every text file: swap contact details */
-function applyContactChanges(text){
+function applyChangesToHTML(html){
   var c=overrides.contact||{};
-  if(c.email){
-    text=text.replace(/info@goosebumpsevents\.eu/g,c.email);
-    text=text.replace(/mailto:[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g,'mailto:'+c.email);
+
+  // Apply TR changes - replace the whole TR block
+  if(overrides.tr&&(Object.keys(overrides.tr.en||{}).length||Object.keys(overrides.tr.fr||{}).length||Object.keys(overrides.tr.nl||{}).length)){
+    var trStart=html.indexOf('\nvar TR={');
+    var trEnd=html.indexOf('\nfunction t(k)');
+    if(trStart>-1&&trEnd>-1){
+      var fullTR={en:Object.assign({},typeof TR!=='undefined'?TR.en:{}),fr:Object.assign({},typeof TR!=='undefined'?TR.fr:{}),nl:Object.assign({},typeof TR!=='undefined'?TR.nl:{})};
+      html=html.slice(0,trStart+1)+'var TR='+JSON.stringify(fullTR)+';\n'+html.slice(trEnd+1);
+    }
   }
-  if(c.phone){text=text.replace(/\+32 456 95 19 69/g,c.phone);}
-  if(c.phoneHref){text=text.replace(/tel:\+3245695169/g,'tel:'+c.phoneHref);}
-  if(c.instagram){text=text.replace(/https:\/\/www\.instagram\.com\/goosebumpsevents\.eu\//g,c.instagram);}
-  return text;
+
+  // Apply IMGS changes
+  if(overrides.imgs){
+    Object.keys(overrides.imgs).forEach(function(key){
+      var newVal=overrides.imgs[key];
+      var pattern='IMGS["'+key+'"]="';
+      var start=html.indexOf(pattern);
+      if(start>-1){
+        var valStart=start+pattern.length;
+        var valEnd=html.indexOf('"',valStart);
+        if(valEnd>-1){html=html.slice(0,valStart)+newVal+html.slice(valEnd);}
+      }
+    });
+  }
+
+  // Apply contact changes
+  if(c.email){
+    html=html.replace(/info@goosebumpsevents\.eu/g,c.email);
+    html=html.replace(/mailto:[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g,'mailto:'+c.email);
+  }
+  if(c.phone){html=html.replace(/\+32 456 95 19 69/g,c.phone);}
+  if(c.phoneHref){html=html.replace(/tel:\+3245695169/g,'tel:'+c.phoneHref);}
+  if(c.instagram){html=html.replace(/https:\/\/www\.instagram\.com\/goosebumpsevents\.eu\//g,c.instagram);}
+
+  return html;
 }
 
 })();
